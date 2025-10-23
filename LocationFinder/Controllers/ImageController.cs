@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 //using System.Net.Mail;
 using MimeKit;
-using MailKit.Net.Smtp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LocationFinder.Controllers
 {
@@ -22,6 +23,7 @@ namespace LocationFinder.Controllers
         {
             _configuration = configuration;
             _hostEnvironment = hostEnvironment;
+
             emailFromId = _configuration["AppSettings:Email_From_Id"] ?? "" ;
             emailFromName = _configuration["AppSettings:Email_From_Name"] ?? "";
             emailFromPassword = _configuration["AppSettings:Email_From_Password"] ?? "";
@@ -32,18 +34,24 @@ namespace LocationFinder.Controllers
         public async Task<IActionResult> GetImage(string photoId)
         {
             var header = Request.Headers;
+            var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() ?? HttpContext.Connection.RemoteIpAddress.ToString();
+            var userAgent = Request.Headers["User-Agent"].ToString();
+            //var location = await GetUserLocationAsync(ipAddress);
+
             header["RequestDateTime"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
+            header["IpAddress"] = ipAddress;
 
             var headersJson = JsonConvert.SerializeObject(header.ToDictionary(
                 h => h.Key,
                 h => h.Value.ToString()
             ), Formatting.Indented);
 
-            //var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() ?? HttpContext.Connection.RemoteIpAddress.ToString();
-            //var userAgent = Request.Headers["User-Agent"].ToString();
-            //var location = await GetUserLocationAsync(ipAddress);
+            
 
-
+            using (StreamWriter writer = System.IO.File.AppendText("logfile.txt"))
+            {
+                writer.WriteLine(headersJson);
+            }
             // Path to your images folder. You can store images inside the "wwwroot/images" directory
             var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "wwwroot", "images", photoId + ".jpg");
 
@@ -100,10 +108,10 @@ namespace LocationFinder.Controllers
             emailMessage.Subject = subject;
 
             // Create the HTML body with the image URL
-            // $"<html><body><p>Here is the image loaded from the URL:</p><img src=\"{imageUrl}\" /></body></html>"
+            // 
             var bodyBuilder = new BodyBuilder
             {
-                HtmlBody = detail + $"<br/><img src=\"{imageUrl}\" />"
+                HtmlBody = $"<html><body>{detail}<img src=\"{imageUrl}\" /></body></html>"
             };
 
             // Set the email body

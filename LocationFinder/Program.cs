@@ -7,17 +7,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add logging configuration (optional customization)
+//builder.Logging.AddConsole(); // Add console logging
+builder.Logging.AddDebug();   // Add debug logging
+builder.Logging.AddEventSourceLogger(); // Add event source logging for Windows Event Log
+
 var app = builder.Build();
 
 // Serve static files (like images) from the wwwroot folder
 app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
+
 
 app.UseHttpsRedirection();
 

@@ -1,0 +1,14 @@
+{
+  "Accept": "*/*",
+  "Host": "localhost:7111",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0",
+  "Accept-Encoding": "gzip, deflate, br, zstd",
+  "Accept-Language": "en-US,en;q=0.5",
+  "Referer": "https://localhost:7111/swagger/index.html",
+  "TE": "trailers",
+  "sec-fetch-dest": "empty",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-site": "same-origin",
+  "priority": "u=0",
+  "RequestDateTime": "2025-10-23T03:39:11Z"
+}
