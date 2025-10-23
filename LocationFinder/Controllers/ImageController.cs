@@ -12,13 +12,19 @@ namespace LocationFinder.Controllers
     public class ImageController : ControllerBase
     {
         private readonly IHostEnvironment _hostEnvironment;
-        private const string emailFromId = "";
-        private const string emailFromName = "";
-        private const string emailFromPassword = "";
+        private readonly IConfiguration _configuration;
 
-        public ImageController(IHostEnvironment hostEnvironment)
+        private readonly string emailFromId = "";
+        private readonly string emailFromName = "";
+        private readonly string emailFromPassword = "";
+
+        public ImageController(IHostEnvironment hostEnvironment, IConfiguration configuration)
         {
+            _configuration = configuration;
             _hostEnvironment = hostEnvironment;
+            emailFromId = _configuration["AppSettings:Email_From_Id"] ?? "" ;
+            emailFromName = _configuration["AppSettings:Email_From_Name"] ?? "";
+            emailFromPassword = _configuration["AppSettings:Email_From_Password"] ?? "";
         }
 
         // GET api/image/{photoId}
